@@ -1,0 +1,12 @@
+/* 公共样式 */
+html,body,.container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.container section {
+  flex: 1;
+  overflow: hidden;
+}
