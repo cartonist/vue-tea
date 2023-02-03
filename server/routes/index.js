@@ -16,7 +16,7 @@ function getTimeToken( exp ){
   // 获取时间戳，精确到秒
   let getTime = parseInt(new Date().getTime()/1000)
   console.log(getTime, exp)
-  if (getTime - exp > 3600) {
+  if (getTime - exp > 0) {
     return true;
   }
 }
@@ -652,7 +652,7 @@ router.post('/addUser', function(req, res, next){
   let secret = 'llllxxxxllll'
   // 生成token
   let token = jwt.sign(payload, secret, {
-    expiresIn: '1h'
+    expiresIn: '3600s'
   })
 
   connection.query(user.queryUserTel(data), function(err, results) {
@@ -663,13 +663,16 @@ router.post('/addUser', function(req, res, next){
       // 每次登录都要修改 token
       connection.query(`update user set token = '${token}' where id = ${id}`, function(err, results) {
       })
-      res.send({
-        code: 200,
-        data: {
-          success: true,
-          msg: '登录成功',
-          data: results[0]
-        }
+      // 修改后再查一次
+      connection.query(user.queryUserTel(data), function(err,results) {
+        res.send({
+          code: 200,
+          data: {
+            success: true,
+            msg: '登录成功',
+            data: results[0]
+          }
+        })
       })
     } else {
       // 尚未注册,先新增，再查询
@@ -751,8 +754,9 @@ router.post('/login', function(req, res, next) {
   let secret = 'llllxxxxllll'
   // 生成token
   let token = jwt.sign(payload, secret, {
-    expiresIn: '1h'
+    expiresIn: '3600s'
   })
+
 
 
 
@@ -766,13 +770,16 @@ router.post('/login', function(req, res, next) {
           // 每次登录都要修改 token
           connection.query(`update user set token = '${token}' where id = ${id}`, function(err, results) {
           })
-          res.send({
-            code: 200,
-            data: {
-              success: true,
-              msg: '登录成功',
-              data: results[0]
-            }
+          // 修改后再查一次
+          connection.query(user.queryUserTel(data), function(err,results) {
+            res.send({
+              code: 200,
+              data: {
+                success: true,
+                msg: '登录成功',
+                data: results[0]
+              }
+            })
           })
         } else {
           // 密码错误
